@@ -1,0 +1,92 @@
+CREATE TABLE BLACKLIST (
+    USER_ID INT,
+    BLACKLIST_CODE INT,
+    BLACKLIST_START_DATE DATE,
+    BLACKLIST_END_DATE DATE
+);
+
+
+CREATE TABLE CURRENCIES (
+    CURRENCY_ID INT,
+    CURRENCY_CODE VARCHAR(50),
+    START_DATE DATE,
+    END_DATE DATE
+);
+
+
+CREATE TABLE CURRENCY_RATES (
+    CURRENCY_ID INT,
+    EXCHANGE_RATE_TO_EUR DECIMAL(38, 2),
+    EXCHANGE_DATE DATE
+);
+
+
+CREATE TABLE PAYMENTS (
+    USER_ID_SENDER INT,
+    CONTRACT_ID INT,
+    AMOUNT DECIMAL(38, 2),
+    CURRENCY INT,
+    TRANSACTION_DATE DATE
+);
+
+INSERT INTO BLACKLIST (USER_ID,BLACKLIST_CODE,BLACKLIST_START_DATE,BLACKLIST_END_DATE) VALUES
+	 (3837,101,'2022-01-01',NULL);
+	
+INSERT INTO CURRENCIES (CURRENCY_ID,CURRENCY_CODE,START_DATE,END_DATE) VALUES
+	 (111,'EUR','1999-01-01',NULL),
+	 (222,'PLN','1995-01-01',NULL),
+	 (333,'CZK','1993-01-01',NULL),
+	 (444,'HRK','1994-05-30','2022-12-31'),
+	 (555,'YUM','1994-01-01','2003-01-01');
+	
+INSERT INTO CURRENCY_RATES (CURRENCY_ID,EXCHANGE_RATE_TO_EUR,EXCHANGE_DATE) VALUES
+	 (222,0.19,'2023-01-05'),
+	 (222,0.20,'2023-02-05'),
+	 (222,0.21,'2023-03-05');
+
+INSERT INTO PAYMENTS (USER_ID_SENDER,CONTRACT_ID,AMOUNT,CURRENCY,TRANSACTION_DATE) VALUES
+	 (9863,786283,10,111,'2023-01-05'),
+	 (7619,379828,34,111,'2023-01-05'),
+	 (8472,367139,750,444,'2023-01-05'),
+	 (9382,382033,378,222,'2023-01-05'),
+	 (3837,789912,82,111,'2023-02-05'),
+	 (9863,786283,19,111,'2023-02-05'),
+	 (9382,382033,406,222,'2023-02-05'),
+	 (9863,786283,53,111,'2023-03-05'),
+	 (5673,372832,640,444,'2023-03-05'),
+	 (7619,379828,34,111,'2023-03-05');
+INSERT INTO PAYMENTS (USER_ID_SENDER,CONTRACT_ID,AMOUNT,CURRENCY,TRANSACTION_DATE) VALUES
+	 (5321,466423,231,111,'2023-03-05');
+
+
+
+-- query to return the amounts in euros aggregated by transaction_date:Resulting table should provide sum in EUR, use exchange rate table if payments are in other currencies
+--Due to a data quality error payments table got some payments in
+--discontinued currencies (where currencies.end_date is not NULL), they should be excluded from the final result
+--Do pay attention to the blacklist table - as payments from blacklisted users should also be excluded
+
+
+
+SELECT 
+    SUM(
+        CASE
+            WHEN c.CURRENCY_CODE = 'EUR' THEN p.AMOUNT  -- If the currency is EUR, no conversion needed
+            ELSE p.AMOUNT * r.EXCHANGE_RATE_TO_EUR     -- Convert the amount to EUR using the exchange rate
+        END
+    ) AS "SUM(AMOUNT_EUR)",
+    p.TRANSACTION_DATE
+FROM 
+    PAYMENTS p
+JOIN 
+    CURRENCIES c ON p.CURRENCY = c.CURRENCY_ID
+JOIN 
+    CURRENCY_RATES r ON p.TRANSACTION_DATE = r.EXCHANGE_DATE
+LEFT JOIN 
+    BLACKLIST b ON p.USER_ID_SENDER = b.USER_ID
+WHERE 
+    (c.END_DATE IS NULL OR c.CURRENCY_CODE = 'EUR')  -- Include EUR currency and exclude discontinued currencies other than EUR
+    AND b.USER_ID IS NULL  -- Exclude payments from blacklisted users
+GROUP BY 
+    p.TRANSACTION_DATE;
+
+
