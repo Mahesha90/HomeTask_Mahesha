@@ -1,7 +1,7 @@
 
 # Part 01: (SQL)
 
-This SQL query (Task2_SQL.sql) retrieves sum of the payments by transaction date from the provided tables.
+This SQL query (Task1_SQL.sql) retrieves sum of the payments by transaction date from the provided tables.
 
 ## Requirements
 
@@ -9,7 +9,7 @@ This SQL query (Task2_SQL.sql) retrieves sum of the payments by transaction date
 
 ## Instructions
 
-1. Execute SQL queries in SQL file(Task2_SQL.sql)
+1. Execute SQL queries in SQL file(Task1_SQL.sql)
 
 Notes:
 Make sure to replace DATE_FORMAT function with the appropriate function supported by your database management system if needed.
