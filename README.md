@@ -1,7 +1,7 @@
 
 # Part 01: (SQL)
 
-This SQL query retrieves sum of the payments by transaction date from the provided tables.
+This SQL query (Task2_SQL.sql) retrieves sum of the payments by transaction date from the provided tables.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ Make sure to replace DATE_FORMAT function with the appropriate function supporte
 
 # Part 02: (Python)
 
-This Python script combines data from two CSV files representing Saturday and Sunday data into one file. 
+This Python script (Task2_Python.ipynb) combines data from two CSV files representing Saturday and Sunday data into one file. 
 
 ## Input
 
