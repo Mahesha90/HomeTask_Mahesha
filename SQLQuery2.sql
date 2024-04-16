@@ -66,27 +66,25 @@ INSERT INTO PAYMENTS (USER_ID_SENDER,CONTRACT_ID,AMOUNT,CURRENCY,TRANSACTION_DAT
 --Do pay attention to the blacklist table - as payments from blacklisted users should also be excluded
 
 
-SELECT 
-    p.TRANSACTION_DATE,
+
+	SELECT 
     SUM(
         CASE
             WHEN c.CURRENCY_CODE = 'EUR' THEN p.AMOUNT  -- If the currency is EUR, no conversion needed
             ELSE p.AMOUNT * r.EXCHANGE_RATE_TO_EUR     -- Convert the amount to EUR using the exchange rate
         END
-    ) AS "SUM(AMOUNT_EUR)"
+    ) AS "SUM(AMOUNT_EUR)",
+    p.TRANSACTION_DATE
 FROM 
     PAYMENTS p
 JOIN 
     CURRENCIES c ON p.CURRENCY = c.CURRENCY_ID
 JOIN 
-    CURRENCY_RATES r ON p.CURRENCY = r.CURRENCY_ID
+    CURRENCY_RATES r ON p.TRANSACTION_DATE = r.EXCHANGE_DATE
 LEFT JOIN 
     BLACKLIST b ON p.USER_ID_SENDER = b.USER_ID
 WHERE 
-    c.END_DATE IS NULL  -- Exclude discontinued currencies
+    (c.END_DATE IS NULL OR c.CURRENCY_CODE = 'EUR')  -- Include EUR currency and exclude discontinued currencies other than EUR
     AND b.USER_ID IS NULL  -- Exclude payments from blacklisted users
 GROUP BY 
     p.TRANSACTION_DATE;
-
-
-select* from PAYMENTS
