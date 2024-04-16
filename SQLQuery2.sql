@@ -67,7 +67,7 @@ INSERT INTO PAYMENTS (USER_ID_SENDER,CONTRACT_ID,AMOUNT,CURRENCY,TRANSACTION_DAT
 
 
 
-	SELECT 
+SELECT 
     SUM(
         CASE
             WHEN c.CURRENCY_CODE = 'EUR' THEN p.AMOUNT  -- If the currency is EUR, no conversion needed
@@ -88,3 +88,5 @@ WHERE
     AND b.USER_ID IS NULL  -- Exclude payments from blacklisted users
 GROUP BY 
     p.TRANSACTION_DATE;
+
+
