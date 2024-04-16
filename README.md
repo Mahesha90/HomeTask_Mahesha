@@ -9,7 +9,7 @@ This SQL query retrieves sum of the payments by transaction date from the provid
 
 ## Instructions
 
-1. Execute SQL queries in SQL file(SQLQuery2.sql)
+1. Execute SQL queries in SQL file(Task2_SQL.sql)
 
 Notes:
 Make sure to replace DATE_FORMAT function with the appropriate function supported by your database management system if needed.
